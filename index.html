@@ -170,11 +170,15 @@
         }
 
         // ==========================================
-        // 2. INISIALISASI PETA
+        // 2. INISIALISASI PETA (GOOGLE MAPS TERRAIN VIA LEAFLET)
         // ==========================================
         const map = L.map('map').setView([-7.7, 110.3], 10);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
+        
+        // Menggunakan Tile Server Google Maps Terrain (lyrs=p)
+        L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+            attribution: '© Google Maps'
         }).addTo(map);
 
         function getStatusInfo(pga) {
@@ -387,7 +391,7 @@
                         const nama = stasiunData.info.nama;
                         const realtime = stasiunData.realtime;
                         
-                        // PERUBAHAN: Sekarang marker dan tooltip HANYA menggunakan pga_y
+                        // Marker dan tooltip menggunakan pga_y
                         const statInfo = getStatusInfo(realtime.pga_y);
 
                         // Buat Marker jika belum ada di Peta
@@ -407,7 +411,7 @@
                         // Update teks pop-up/tooltip berdasarkan sumbu Y
                         mapMarkers[stasiunId].bindTooltip(`<b>${nama}</b><br>MMI: ${statInfo.mmi}<br>PGA: ${realtime.pga_y} gal`, {permanent: false}).openTooltip();
 
-                        // Cek Trigger Alarm (Syarat alarm tetap ketiga sumbu untuk menghindari false alarm)
+                        // Cek Trigger Alarm
                         if (realtime.pga_z >= 2.9 && realtime.pga_y >= 2.9 && realtime.pga_x >= 2.9) {
                             alarmHarusBunyi = true;
                         }
@@ -419,7 +423,7 @@
                             document.getElementById('selectedStationName').childNodes[0].nodeValue = `Data Saat Ini: ${nama} (${stasiunId}) `;
                             document.getElementById('infoWaktu').innerText = `Waktu Server: ${realtime.tanggal} ${realtime.waktu}`;
                             
-                            // Kontrol Tampilan Indikator Perekaman (Berdasarkan variabel is_recording dari Python)
+                            // Kontrol Tampilan Indikator Perekaman
                             const badge = document.getElementById('recBadge');
                             if (realtime.is_recording) {
                                 badge.style.display = 'inline-block';
